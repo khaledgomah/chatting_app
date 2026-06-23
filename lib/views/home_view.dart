@@ -16,21 +16,42 @@ class HomeView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Icon(
+              Icons.forum_rounded,
+              size: 64,
+              color: kSecondryColor,
+            ),
+            const SizedBox(
+              height: 24,
+            ),
             const Text(
-              'WELCOME TO CHAT APP',
+              'Chat App',
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5),
             ),
-            Image.asset(kLogo),
+            const SizedBox(
+              height: 6,
+            ),
+            const Text(
+              'Connect instantly with friends',
+              style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 13,
+                  fontWeight: FontWeight.normal),
+            ),
+            const SizedBox(
+              height: 48,
+            ),
             MainButton(
                 text: 'Login',
                 onPressed: () {
                   Navigator.pushNamed(context, LoginView.id);
                 }),
             const SizedBox(
-              height: 10,
+              height: 12,
             ),
             MainButton(
                 text: 'Register',

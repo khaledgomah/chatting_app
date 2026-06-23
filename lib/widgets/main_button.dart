@@ -6,21 +6,37 @@ class MainButton extends StatelessWidget {
   final VoidCallback onPressed;
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
-      child: TextButton(
+      height: 42,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xff6366f1), // Indigo
+            Color(0xff06b6d4), // Cyan
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+      child: ElevatedButton(
         onPressed: onPressed,
-        style: ButtonStyle(
-            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                    8.0), // Set border radius for rounded corners
-              ),
-            ),
-            backgroundColor: WidgetStateProperty.all(Colors.white)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24.0),
+          ),
+        ),
         child: Text(
           text,
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.8,
+          ),
         ),
       ),
     );
