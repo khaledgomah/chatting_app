@@ -16,7 +16,7 @@ class HomeView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'WELCOME TO CHAT APP',
               style: TextStyle(
                   color: Colors.white,
