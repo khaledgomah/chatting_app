@@ -9,6 +9,7 @@ import 'package:chatting_app/widgets/custom_text_form_field.dart';
 import 'package:chatting_app/widgets/main_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -23,14 +24,36 @@ class _LoginViewState extends State<LoginView> {
 
   String password = '';
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kPrimaryColor,
-      body: Padding(
-        padding: kViewPadding,
-        child: ListView(
-          children: [
+      body: ModalProgressHUD(
+        inAsyncCall: isLoading,
+        opacity: 0.6,
+        color: kPrimaryColor,
+        progressIndicator: const Center(
+          child: Card(
+            elevation: 10,
+            color: Color(0xff1b2e3f),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: CircularProgressIndicator(
+                color: kSecondryColor,
+                strokeWidth: 4,
+              ),
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: kViewPadding,
+          child: ListView(
+            children: [
             const SizedBox(
               height: 150,
             ),
@@ -80,6 +103,9 @@ class _LoginViewState extends State<LoginView> {
               text: 'Login',
               onPressed: () async {
                 try {
+                  setState(() {
+                    isLoading = true;
+                  });
                   await signIn();
                   Navigator.pushNamedAndRemoveUntil(
                       context, ChatView.id, (Route<dynamic> route) => false,
@@ -95,6 +121,10 @@ class _LoginViewState extends State<LoginView> {
                   }
                 } catch (e) {
                   log(e.toString());
+                } finally {
+                  setState(() {
+                    isLoading = false;
+                  });
                 }
               },
             ),
@@ -116,7 +146,7 @@ class _LoginViewState extends State<LoginView> {
           ],
         ),
       ),
-    );
+    ),);
   }
 
   Future<void> signIn() async {

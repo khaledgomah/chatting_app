@@ -36,6 +36,24 @@ class _RegisterViewState extends State<RegisterView> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: ModalProgressHUD(
             inAsyncCall: isLoading,
+            opacity: 0.6,
+            color: kPrimaryColor,
+            progressIndicator: const Center(
+              child: Card(
+                elevation: 10,
+                color: Color(0xff1b2e3f),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: CircularProgressIndicator(
+                    color: kSecondryColor,
+                    strokeWidth: 4,
+                  ),
+                ),
+              ),
+            ),
             child: ListView(
               children: [
                 const SizedBox(
@@ -100,8 +118,9 @@ class _RegisterViewState extends State<RegisterView> {
                   onPressed: () async {
                     if (formKey!.currentState!.validate()) {
                       try {
-                        isLoading = true;
-                        setState(() {});
+                        setState(() {
+                          isLoading = true;
+                        });
                         await register();
                         Navigator.pushNamedAndRemoveUntil(context, ChatView.id,
                             (Route<dynamic> route) => false,
@@ -116,9 +135,13 @@ class _RegisterViewState extends State<RegisterView> {
                         } else {
                           showSnackBar(context, e.code);
                         }
+                      } catch (e) {
+                        showSnackBar(context, 'An unexpected error occurred.');
+                      } finally {
+                        setState(() {
+                          isLoading = false;
+                        });
                       }
-                      isLoading = false;
-                      setState(() {});
                     }
                   },
                 ),
