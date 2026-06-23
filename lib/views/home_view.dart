@@ -3,7 +3,6 @@ import 'package:chatting_app/views/login_view.dart';
 import 'package:chatting_app/views/register_view.dart';
 import 'package:chatting_app/widgets/main_button.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -19,7 +18,7 @@ class HomeView extends StatelessWidget {
           children: [
             Text(
               'WELCOME TO CHAT APP',
-              style: GoogleFonts.oswald(
+              style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold),
