@@ -1,13 +1,13 @@
 import 'dart:developer';
 import 'package:chatting_app/constants.dart';
 import 'package:chatting_app/helper/snack_bar.dart';
-import 'package:chatting_app/views/chat_view.dart';
+import 'package:chatting_app/views/users_view.dart';
 import 'package:chatting_app/widgets/custom_text_button.dart';
 import 'package:chatting_app/widgets/custom_text_form_field.dart';
 import 'package:chatting_app/widgets/main_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -18,6 +18,8 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
+  String username = '';
+
   String email = '';
 
   String password = '';
@@ -33,135 +35,139 @@ class _RegisterViewState extends State<RegisterView> {
       body: Form(
         key: formKey,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: ModalProgressHUD(
-            inAsyncCall: isLoading,
-            opacity: 0.6,
-            color: kPrimaryColor,
-            progressIndicator: const Center(
-              child: Card(
-                elevation: 10,
-                color: Color(0xff1b2e3f),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(24.0),
-                  child: CircularProgressIndicator(
-                    color: kSecondryColor,
-                    strokeWidth: 4,
-                  ),
-                ),
+          padding: kViewPadding,
+          child: ListView(
+            children: [
+              const SizedBox(
+                height: 80,
               ),
-            ),
-            child: ListView(
-              children: [
-                const SizedBox(
-                  height: 150,
-                ),
-                Image.asset(
-                  height: 150,
-                  'assets/images/logo.png',
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Chat App',
-                      style: TextStyle(fontSize: 32, color: Colors.white),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const Text(
-                  'Register',
-                  style: TextStyle(fontSize: 24, color: Colors.white),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                CustomTextFormField(
-                  validator: (data) {
-                    if (!data!.endsWith('.com')) {
-                      return 'Enter a valid email';
-                    }
-                    return null;
-                  },
-                  labelText: 'Email',
-                  onChanged: (data) {
-                    email = data;
-                    log(data);
-                  },
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                CustomTextFormField(
-                    validator: (data) {
-                      if (data!.length < 8) {
-                        return 'Password shoud be 8 character or more';
-                      }
-                      return null;
-                    },
-                    obscureText: true,
-                    labelText: 'Password',
-                    onChanged: (data) {
-                      password = data;
-                    }),
-                const SizedBox(
-                  height: 10,
-                ),
-                MainButton(
-                  text: 'Register',
-                  onPressed: () async {
-                    if (formKey!.currentState!.validate()) {
-                      try {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        await register();
-                        Navigator.pushNamedAndRemoveUntil(context, ChatView.id,
-                            (Route<dynamic> route) => false,
-                            arguments: email);
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'weak-password') {
-                          showSnackBar(
-                              context, 'The password provided is too weak.');
-                        } else if (e.code == 'email-already-in-use') {
-                          showSnackBar(context,
-                              'The account already exists for that email.');
-                        } else {
-                          showSnackBar(context, e.code);
-                        }
-                      } catch (e) {
-                        showSnackBar(context, 'An unexpected error occurred.');
-                      } finally {
-                        setState(() {
-                          isLoading = false;
-                        });
-                      }
-                    }
-                  },
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Already have an acount?",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    CustomTextButton(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      text: 'Login now',
+              const Icon(
+                Icons.forum_rounded,
+                size: 64,
+                color: kSecondryColor,
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              const Text(
+                'Create Account',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5),
+              ),
+              const SizedBox(
+                height: 6,
+              ),
+              const Text(
+                'Sign up to get started',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white54,
+                    fontSize: 13,
+                    fontWeight: FontWeight.normal),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              CustomTextFormField(
+                prefixIcon: Icons.person_rounded,
+                keyboardType: TextInputType.name,
+                textInputAction: TextInputAction.next,
+                validator: (data) {
+                  if (data == null || data.trim().isEmpty) {
+                    return 'Please enter a username';
+                  }
+                  return null;
+                },
+                labelText: 'Username',
+                onChanged: (data) {
+                  username = data;
+                },
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              CustomTextFormField(
+                prefixIcon: Icons.email_rounded,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                validator: (data) {
+                  if (data == null || data.trim().isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  if (!data.endsWith('.com')) {
+                    return 'Enter a valid email';
+                  }
+                  return null;
+                },
+                labelText: 'Email',
+                onChanged: (data) {
+                  email = data;
+                  log(data);
+                },
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              CustomTextFormField(
+                prefixIcon: Icons.lock_rounded,
+                obscureText: true,
+                keyboardType: TextInputType.visiblePassword,
+                textInputAction: TextInputAction.done,
+                validator: (data) {
+                  if (data == null || data.trim().isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  if (data.length < 8) {
+                    return 'Password should be 8 characters or more';
+                  }
+                  return null;
+                },
+                onFieldSubmitted: (data) {
+                  registerUser();
+                },
+                labelText: 'Password',
+                onChanged: (data) {
+                  password = data;
+                },
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
                     )
-                  ],
-                )
-              ],
-            ),
+                  : MainButton(
+                      text: 'Register',
+                      onPressed: () {
+                        registerUser();
+                      },
+                    ),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Already have an account?",
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  CustomTextButton(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    text: 'Login now',
+                  )
+                ],
+              )
+            ],
           ),
         ),
       ),
@@ -173,5 +179,37 @@ class _RegisterViewState extends State<RegisterView> {
       email: email,
       password: password,
     );
+    await FirebaseFirestore.instance.collection('users').doc(email).set({
+      'username': username,
+      'email': email,
+    });
+  }
+
+  Future<void> registerUser() async {
+    if (formKey!.currentState!.validate()) {
+      try {
+        setState(() {
+          isLoading = true;
+        });
+        await register();
+        Navigator.pushNamedAndRemoveUntil(
+            context, UsersView.id, (Route<dynamic> route) => false,
+            arguments: email);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          showSnackBar(context, 'The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          showSnackBar(context, 'The account already exists for that email.');
+        } else {
+          showSnackBar(context, e.message ?? e.code);
+        }
+      } catch (e) {
+        showSnackBar(context, 'An unexpected error occurred.');
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 }
