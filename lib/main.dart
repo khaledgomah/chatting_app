@@ -3,6 +3,7 @@ import 'package:chatting_app/views/chat_view.dart';
 import 'package:chatting_app/views/home_view.dart';
 import 'package:chatting_app/views/login_view.dart';
 import 'package:chatting_app/views/register_view.dart';
+import 'package:chatting_app/views/users_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,8 @@ class ChatApp extends StatelessWidget {
         LoginView.id: (context) => const LoginView(),
         RegisterView.id: (context) => const RegisterView(),
         HomeView.id: (context) => const HomeView(),
-        ChatView.id: (context) => const ChatView()
+        ChatView.id: (context) => const ChatView(),
+        UsersView.id: (context) => const UsersView(),
       },
       initialRoute: HomeView.id,
     );

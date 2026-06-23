@@ -6,7 +6,8 @@ class Message {
   final String email;
 
   Message({required this.text, required this.date, required this.email});
-  factory Message.fromJson(json) {
-    return Message(text: json['message'], date: json['time'], email: json['email']);
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+        text: json['message'], date: json['time'], email: json['email']);
   }
 }
